@@ -209,6 +209,23 @@ const updated = project?.updated.toLocaleDateString('en-US', { month: 'long', ye
     background: none;
     padding: 0;
   }
+  .prose :global(table) {
+    width: 100%;
+    margin: 0.5rem 0 1.25rem;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .prose :global(th) {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
   footer {
     display: flex;
     justify-content: space-between;

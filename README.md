@@ -2,6 +2,8 @@
 
 Portfolio site built with [Astro](https://astro.build), hosted on GitHub Pages at https://ttorbert.github.io.
 
+**Full setup instructions: [docs/SETUP.md](docs/SETUP.md)** (hosting, adding projects, overview pages, images, custom domain, private repos, troubleshooting). Quick reference below.
+
 ## Adding a project
 Add the `portfolio` topic to a public repo on GitHub. The card uses the repo's
 description, website (shown as "Live demo"), language and other topics.
