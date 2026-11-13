@@ -37,7 +37,7 @@ const updated = p.updated.toLocaleDateString('en-US', { month: 'short', year: 'n
   <div class="body">
     <div class="head">
       <h3>
-        <a href={p.homepage ?? p.url} class="title-link">{p.title}</a>
+        <a href={p.overview ?? p.homepage ?? p.url} class="title-link">{p.title}</a>
       </h3>
       {p.featured && <span class="badge">Featured</span>}
     </div>
@@ -64,6 +64,7 @@ const updated = p.updated.toLocaleDateString('en-US', { month: 'short', year: 'n
       <span>Updated {updated}</span>
     </div>
     <div class="actions">
+      {p.overview && <a href={p.overview}>Overview →</a>}
       <a href={p.url}>Code →</a>
       {p.homepage && <a href={p.homepage}>Live demo →</a>}
     </div>
@@ -178,7 +179,8 @@ const updated = p.updated.toLocaleDateString('en-US', { month: 'short', year: 'n
   }
   .actions {
     display: flex;
-    gap: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border);
     font-size: 0.875rem;

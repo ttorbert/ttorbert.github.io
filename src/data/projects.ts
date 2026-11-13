@@ -1,3 +1,4 @@
+import { getCollection } from 'astro:content';
 import { site, overrides } from './site';
 
 export interface Project {
@@ -13,6 +14,7 @@ export interface Project {
   featured: boolean;
   image: string | null;
   order: number;
+  overview: string | null; // URL of the overview page, if one exists
 }
 
 interface GitHubRepo {
@@ -75,8 +77,16 @@ function prettify(name: string) {
   return name.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export async function getProjects(): Promise<{ projects: Project[]; live: boolean }> {
+let cached: Promise<{ projects: Project[]; live: boolean }> | undefined;
+
+// Fetched once per build and shared by every page.
+export function getProjects() {
+  return (cached ??= loadProjects());
+}
+
+async function loadProjects(): Promise<{ projects: Project[]; live: boolean }> {
   const { repos, ok } = await fetchRepos();
+  const overviews = new Set((await getCollection('projects')).map((e) => e.id.toLowerCase()));
 
   const projects = repos
     .filter((r) => (r.topics ?? []).includes(site.topic) && !overrides[r.name]?.hidden)
@@ -95,6 +105,7 @@ export async function getProjects(): Promise<{ projects: Project[]; live: boolea
         featured: o.featured ?? false,
         image: o.image ?? null,
         order: o.order ?? Number.MAX_SAFE_INTEGER,
+        overview: overviews.has(r.name.toLowerCase()) ? `/projects/${r.name}/` : null,
       };
     })
     .sort(
