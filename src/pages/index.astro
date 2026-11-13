@@ -1,0 +1,202 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site } from '../data/site';
+import { getProjects } from '../data/projects';
+
+const { projects, live } = await getProjects();
+const featured = projects.filter((p) => p.featured);
+const rest = projects.filter((p) => !p.featured);
+const year = new Date().getFullYear();
+const LABELS: Record<string, string> = { github: 'GitHub', linkedin: 'LinkedIn', email: 'Email' };
+---
+<Base title={`${site.name} — Projects`} description={site.intro}>
+  <header class="wrap hero">
+    <p class="kicker">@{site.githubUser}</p>
+    <h1>{site.tagline}</h1>
+    <p class="intro">{site.intro}</p>
+    <nav class="links">
+      {
+        Object.entries(site.links).map(([label, href]) => (
+          <a href={href}>{LABELS[label] ?? label.charAt(0).toUpperCase() + label.slice(1)}</a>
+        ))
+      }
+    </nav>
+  </header>
+
+  <main class="wrap">
+    {
+      !live && (
+        <p class="notice">
+          Preview build: GitHub wasn’t reachable, so sample data is shown.
+        </p>
+      )
+    }
+
+    {
+      featured.length > 0 && (
+        <section>
+          <h2>Featured</h2>
+          <div class="grid featured">
+            {featured.map((p) => (
+              <ProjectCard project={p} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      rest.length > 0 && (
+        <section>
+          <h2>
+            {featured.length > 0 ? 'More projects' : 'Projects'}
+            <span class="count">{rest.length}</span>
+          </h2>
+          <div class="grid">
+            {rest.map((p) => (
+              <ProjectCard project={p} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      projects.length === 0 && (
+        <div class="empty">
+          <h2>No projects yet</h2>
+          <p>
+            Add the <code>{site.topic}</code> topic to a repo on GitHub and it will show up here after the next
+            build.
+          </p>
+        </div>
+      )
+    }
+  </main>
+
+  <footer class="wrap">
+    <p>© {year} {site.name} · Built with Astro, hosted on GitHub Pages</p>
+  </footer>
+</Base>
+
+<style>
+  .wrap {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  @media (min-width: 640px) {
+    .wrap {
+      padding: 0 2rem;
+    }
+  }
+  .hero {
+    padding-top: clamp(3rem, 10vw, 6rem);
+    padding-bottom: clamp(2rem, 6vw, 3.5rem);
+  }
+  .kicker {
+    margin: 0 0 0.75rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+  .intro {
+    max-width: 38rem;
+    margin: 1.25rem 0 0;
+    font-size: 1.1rem;
+    color: var(--muted);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.75rem;
+  }
+  .links a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .links a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  section {
+    margin-bottom: 3.5rem;
+  }
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .count {
+    font-size: 0.75rem;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    background: var(--border);
+    color: var(--text);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 1.25rem;
+  }
+  .grid.featured {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  }
+  .notice {
+    margin: 0 0 2rem;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .empty {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+  }
+  .empty h2 {
+    justify-content: center;
+  }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.9em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  footer {
+    padding-bottom: 3rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer p {
+    margin: 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+</style>

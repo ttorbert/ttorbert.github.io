@@ -1,0 +1,196 @@
+---
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+
+const LANG_COLORS: Record<string, string> = {
+  TypeScript: '#3178c6',
+  JavaScript: '#f1e05a',
+  Python: '#3572A5',
+  Go: '#00ADD8',
+  Rust: '#dea584',
+  Swift: '#F05138',
+  Kotlin: '#A97BFF',
+  Java: '#b07219',
+  Ruby: '#701516',
+  'C#': '#178600',
+  'C++': '#f34b7d',
+  C: '#555555',
+  HTML: '#e34c26',
+  CSS: '#563d7c',
+  Astro: '#ff5a03',
+  Vue: '#41b883',
+  Svelte: '#ff3e00',
+  Shell: '#89e051',
+  Dart: '#00B4AB',
+  PHP: '#4F5D95',
+  'Jupyter Notebook': '#DA5B0B',
+};
+
+const updated = p.updated.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+---
+<article class:list={['card', { featured: p.featured }]}>
+  {p.image && <img class="shot" src={p.image} alt={`Screenshot of ${p.title}`} loading="lazy" />}
+  <div class="body">
+    <div class="head">
+      <h3>
+        <a href={p.homepage ?? p.url} class="title-link">{p.title}</a>
+      </h3>
+      {p.featured && <span class="badge">Featured</span>}
+    </div>
+    {p.description && <p class="desc">{p.description}</p>}
+    {
+      p.topics.length > 0 && (
+        <ul class="topics">
+          {p.topics.slice(0, 5).map((t) => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )
+    }
+    <div class="meta">
+      {
+        p.language && (
+          <span class="lang">
+            <span class="dot" style={`background:${LANG_COLORS[p.language] ?? 'var(--muted)'}`} />
+            {p.language}
+          </span>
+        )
+      }
+      {p.stars > 0 && <span>★ {p.stars}</span>}
+      <span>Updated {updated}</span>
+    </div>
+    <div class="actions">
+      <a href={p.url}>Code →</a>
+      {p.homepage && <a href={p.homepage}>Live demo →</a>}
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition:
+      transform 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  }
+  .shot {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem 1.25rem 1.1rem;
+    flex: 1;
+  }
+  .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+  }
+  .featured h3 {
+    font-size: 1.3rem;
+  }
+  .title-link {
+    text-decoration: none;
+  }
+  .title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .badge {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+  }
+  .desc {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .topics li {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+  }
+  .actions {
+    display: flex;
+    gap: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .actions a {
+    position: relative;
+    z-index: 1;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .actions a:hover {
+    text-decoration: underline;
+  }
+</style>
