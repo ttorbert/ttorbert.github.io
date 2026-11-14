@@ -33,12 +33,21 @@ If your detection content is mostly prebuilt rules on Fleet integrations, your e
 Every hour, inside your existing Elastic deployment, it:
 
 1. **Measures ingest lag** (`event.ingested` minus `@timestamp`) for every data stream your enabled rules search.
-2. **Estimates each rule's miss rate** from that lag and the rule's schedule and look-back, and **recommends a look-back** that would close the gap.
-3. **Points to the cause:** slow hosts, sources with wrong clocks, and data streams with no arrival time.
-4. **Keeps 90 days of history** in a dashboard, and **alerts** when a rule's estimated miss rate passes a threshold (1% by default).
-5. **Sorts your rules into groups:** measured, unaffected (`event.ingested`), and unsupported. Nothing is silently skipped.
+2. **Estimates each rule's missed events and miss rate** from that lag and the rule's schedule and look-back.
+3. **Recommends a look-back** that would close the gap, including the exact **additional look-back** value to enter in Kibana.
+4. **Points to the cause:** slow hosts, sources with wrong clocks, and data streams with no arrival time.
+5. **Keeps 90 days of history** in a dashboard, and **alerts** when a rule's estimated miss rate passes a threshold (1% by default).
+6. **Sorts your rules into groups:** measured, unaffected (`event.ingested`), and unsupported. Nothing is silently skipped.
 
 It runs entirely in Elastic, built from Workflows, ES|QL, ingest pipelines, a dashboard and alerting rules. There are no agents, servers or external services to run.
+
+[![The Ingest Lag Profiler dashboard in Kibana, showing rules at risk with estimated missed events, miss rates and recommended look-backs, plus lag trends, slow hosts, clock problems, measurement gaps and rule coverage](/screens/ingest-lag-profiler-dashboard.png)](/screens/ingest-lag-profiler-dashboard.png)
+
+*The dashboard after an hour of lab traffic from normal, slow, bursty and clock-skewed hosts. Click to enlarge.*
+
+**Missed events, not just rates.** Rules at risk are ranked by estimated missed events. In the lab run above, a rule with a 2.5% miss rate missed 1,346 events in an hour, nearly as many as one at 11.5% (1,535), because it searches four times the volume. A rate alone would have ranked it as minor. The rate still matters for rules hunting rare, high-severity events, where a handful of misses counts.
+
+**Total versus additional look-back.** A rule's search window is its interval plus Kibana's *Additional look-back time*. The dashboard shows both the recommended total and the additional value to enter. For example, for a rule running every 5 minutes with a recommended 16-minute window, you set the additional look-back to 11.
 
 ## Does the estimate hold up?
 
